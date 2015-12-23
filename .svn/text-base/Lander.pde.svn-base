@@ -1,0 +1,69 @@
+class Lander {
+  float xpos, ypos, xvel, yvel, thrust;
+  float lander_height = 42;
+  float lander_width = 28;
+  float cellsize = 2;
+  int columns, rows;
+  PImage sprite;
+  boolean exploding = false;
+  int explode_radius = 0;
+
+  /**
+   * Constructor
+   */
+  public Lander(float initial_x, float initial_y) {
+    xpos = initial_x;
+    ypos = initial_y;
+    sprite = loadImage("data/lander1.jpg");
+  }
+  
+  boolean didCollideWithLandscape(Landscape landscape) {
+    float lander_bottom_y = ypos + lander_width;
+    float lander_left_bottom_x = this.xpos;
+    float lander_right_bottom_x = this.xpos + this.lander_width;
+    if (lander_bottom_y > landscape.maxHeightInRange(lander_left_bottom_x, lander_right_bottom_x)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  void draw() {
+    if (this.exploding) { 
+      this.explode(explode_radius++);
+    } else {
+      image(sprite, xpos, ypos);
+    }
+  }
+  
+  void explode(int r) {
+    // explode the lander into 1x1 pixels shooting outward from lander center
+    float lander_center_x = xpos + lander_width/2;
+    float lander_center_y = ypos + lander_height/2;
+    for (int px = 0; px < lander_width; px+=2) {
+      for (int py = 0; py < lander_height; py+=2) {
+        // now we're on an image pixel, find the direction vector
+        float vec_x = px - (lander_width/2);
+        float vec_y = py - (lander_height/2);
+        PImage shard = sprite.get(px, py, 2, 2);
+        float original_pixel_pos_x = xpos + px;
+        float original_pixel_pos_y = ypos + px;
+        int new_pixel_pos_x = Math.round(original_pixel_pos_x - r * vec_x);
+        int new_pixel_pos_y = Math.round(original_pixel_pos_y - r * vec_y);
+        // println("Drawing shard at " + new_pixel_pos_x + ", " + new_pixel_pos_y);
+        fill(255);
+        // rect(new_pixel_pos_x, new_pixel_pos_y, 5, 5);
+        image(shard, new_pixel_pos_x, new_pixel_pos_y);
+      }
+    }
+  }
+  
+  void update() {
+    // The pull of gravity on the lander
+    yvel += 0.0098f;
+    
+    // Update position based on velocity
+    xpos += xvel;
+    ypos += yvel;
+  }
+}

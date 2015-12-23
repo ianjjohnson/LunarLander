@@ -1,0 +1,31 @@
+
+Landscape landscape;
+Lander lander;
+
+void setup()
+{
+  size(800,480);
+  landscape = new Landscape(800,480);
+  lander = new Lander(50, 50);
+}
+
+void draw()
+{
+  background(100);
+  stroke(0);
+  fill(0);
+  smooth();
+  
+  // Update all parts of the world, lander etc.
+  lander.update();
+  
+  if (lander.didCollideWithLandscape(landscape)) {
+    lander.exploding = true;
+    fill(0);
+    text("LANDER RAN INTO LANDSCAPE WITH VERTICAL VELOCITY " + lander.yvel, 200,200);
+  }
+  
+  // Draw
+  landscape.draw();
+  lander.draw();
+}
